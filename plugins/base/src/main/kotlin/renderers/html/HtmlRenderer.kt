@@ -1,8 +1,5 @@
 package org.jetbrains.dokka.base.renderers.html
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import org.jetbrains.dokka.DokkaSourceSetID
@@ -167,7 +164,7 @@ open class HtmlRenderer(
             content.style
         )
 
-    private fun FlowContent.buildPlatformDependent(
+    open fun FlowContent.buildPlatformDependent(
         nodes: Map<DisplaySourceSet, Collection<ContentNode>>,
         pageContext: ContentPage,
         extra: PropertyContainer<ContentNode> = PropertyContainer.empty(),
