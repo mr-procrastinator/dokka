@@ -10,14 +10,16 @@ import org.jetbrains.dokka.model.properties.PropertyContainer
 import org.jetbrains.dokka.pages.*
 import org.jetbrains.dokka.plugability.DokkaContext
 import org.jetbrains.dokka.transformers.pages.PageTransformer
+import org.jetbrains.dokka.webhelp.renderers.preprocessors.ProjectDefinitionAppender
 import org.jetbrains.dokka.webhelp.renderers.preprocessors.TableOfContentPreprocessor
 import org.jetbrains.dokka.webhelp.renderers.tags.*
+import java.io.File
 
 open class WebhelpRenderer(dokkaContext: DokkaContext) : HtmlRenderer(dokkaContext) {
     override val extension: String
         get() = ".xml"
 
-    override val preprocessors: List<PageTransformer> = listOf(RootCreator, TableOfContentPreprocessor())
+    override val preprocessors: List<PageTransformer> = listOf(RootCreator, TableOfContentPreprocessor(), ProjectDefinitionAppender)
 
     override fun FlowContent.wrapGroup(
         node: ContentGroup,
@@ -32,6 +34,18 @@ open class WebhelpRenderer(dokkaContext: DokkaContext) : HtmlRenderer(dokkaConte
             attributes["nullable"] = "true"
             content()
         }
+
+    override fun FlowContent.buildDRILink(
+        node: ContentDRILink,
+        pageContext: ContentPage,
+        sourceSetRestriction: Set<DisplaySourceSet>?
+    ) {
+        locationProvider.resolve(node.address, node.sourceSets)?.let { address ->
+            buildLink(address) {
+                buildText(node.children, pageContext, sourceSetRestriction)
+            }
+        }
+    }
 
     override fun FlowContent.buildTable(
         node: ContentTable,
@@ -132,7 +146,9 @@ open class WebhelpRenderer(dokkaContext: DokkaContext) : HtmlRenderer(dokkaConte
         }
 
     private val ContentPage.id: String?
-        get() = locationProvider.resolve(this)?.substringBeforeLast(".")
+        get() = locationProvider.resolve(this)?.replace(
+            File.separator, "."
+        )?.substringBeforeLast(".")
 
     private fun String.stripDiv() = drop(5).dropLast(6) // TODO: Find a way to do it without arbitrary trims
 }
