@@ -130,17 +130,26 @@ index dd5f1ea4..00000000
 -    }
 -}
 diff --git a/gradle.properties b/gradle.properties
-index 18b95166..36881b53 100644
+index 18b95166..25c8e296 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -5,6 +5,7 @@
  # Kotlin
  version=1.4.0-M1-SNAPSHOT
  group=org.jetbrains.kotlinx
-+dokka_it_kotlin_version=
++dokka_it_kotlin_version=1.4.0
  kotlin_version=1.4.0
  
  # Dependencies
+@@ -52,7 +53,7 @@ jekyll_version=4.0
+ 
+ # JS IR backend sometimes crashes with out-of-memory
+ # TODO: Remove once KT-37187 is fixed
+-org.gradle.jvmargs=-Xmx2g
++org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
+ 
+ # Workaround for Bintray treating .sha512 files as artifacts
+ # https://github.com/gradle/gradle/issues/11412
 diff --git a/gradle/dokka.gradle b/gradle/dokka.gradle
 index 559ec8b6..891e07b3 100644
 --- a/gradle/dokka.gradle
